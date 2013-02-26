@@ -97,7 +97,7 @@ static void on_torrent_completed(TrgTorrentModel * model,
                                  GtkTreeIter * iter, gpointer data);
 static void on_torrent_added(TrgTorrentModel * model, GtkTreeIter * iter,
                              gpointer data);
-static gboolean delete_event(GtkWidget * w, GdkEvent * event,
+static gboolean delete_event(TrgMainWindow * win, GdkEvent * event,
                              gpointer data);
 static void destroy_window(TrgMainWindow * win,
                            gpointer data G_GNUC_UNUSED);
@@ -379,10 +379,21 @@ on_torrent_added(TrgTorrentModel * model, GtkTreeIter * iter,
 }
 
 static gboolean
-delete_event(GtkWidget * w, GdkEvent * event G_GNUC_UNUSED,
+delete_event(TrgMainWindow * win, GdkEvent * event G_GNUC_UNUSED,
              gpointer data G_GNUC_UNUSED)
 {
-    return FALSE;
+    TrgMainWindowPrivate *priv = win->priv;
+    TrgPrefs *prefs = trg_client_get_prefs(priv->client);
+
+    if (priv->statusIcon
+        && trg_prefs_get_bool(prefs, TRG_PREFS_KEY_SYSTEM_TRAY_MINIMISE,
+                              TRG_PREFS_GLOBAL)) {
+        trg_main_window_set_hidden_to_tray(win, TRUE);
+        return TRUE;
+    }
+    else {
+        return FALSE;
+    }
 }
 
 static void
