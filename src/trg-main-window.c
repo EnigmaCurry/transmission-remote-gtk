@@ -2512,32 +2512,19 @@ void trg_main_window_remove_graph(TrgMainWindow * win)
 void trg_main_window_add_status_icon(TrgMainWindow * win)
 {
     TrgMainWindowPrivate *priv = win->priv;
-#ifdef HAVE_LIBAPPINDICATOR
-    if (is_unity() && (priv->appIndicator =
-                       app_indicator_new(PACKAGE_NAME, PACKAGE_NAME,
-                                         APP_INDICATOR_CATEGORY_APPLICATION_STATUS)))
-    {
-        app_indicator_set_status(priv->appIndicator,
-                                 APP_INDICATOR_STATUS_ACTIVE);
-        app_indicator_set_menu(priv->appIndicator,
-                               trg_status_icon_view_menu(win, NULL));
-    } else {
-#else
-    if (!is_unity()) {
-#endif
-        priv->statusIcon =
-            gtk_status_icon_new_from_icon_name(PACKAGE_NAME);
-        gtk_status_icon_set_screen(priv->statusIcon,
-                                   gtk_window_get_screen(GTK_WINDOW(win)));
-        g_signal_connect(priv->statusIcon, "activate",
-                         G_CALLBACK(status_icon_activated), win);
-        g_signal_connect(priv->statusIcon, "button-press-event",
-                         G_CALLBACK(status_icon_button_press_event), win);
-        g_signal_connect(priv->statusIcon, "popup-menu",
-                         G_CALLBACK(trg_status_icon_popup_menu_cb), win);
+    
+    priv->statusIcon =
+      gtk_status_icon_new_from_icon_name(PACKAGE_NAME);
+    gtk_status_icon_set_screen(priv->statusIcon,
+			       gtk_window_get_screen(GTK_WINDOW(win)));
+    g_signal_connect(priv->statusIcon, "activate",
+		     G_CALLBACK(status_icon_activated), win);
+    g_signal_connect(priv->statusIcon, "button-press-event",
+		     G_CALLBACK(status_icon_button_press_event), win);
+    g_signal_connect(priv->statusIcon, "popup-menu",
+		     G_CALLBACK(trg_status_icon_popup_menu_cb), win);
 
-        gtk_status_icon_set_visible(priv->statusIcon, TRUE);
-    }
+    gtk_status_icon_set_visible(priv->statusIcon, TRUE);
 
     connchange_whatever_statusicon(win,
                                    trg_client_is_connected(priv->client));
